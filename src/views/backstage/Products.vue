@@ -45,7 +45,12 @@
               >
                 編輯
               </button>
-              <button type="button" class="btn btn-sm btn-danger" data-action="remove">
+              <button
+                @click="openModal(item)"
+                type="button"
+                class="btn btn-sm btn-danger"
+                data-action="remove"
+              >
                 刪除
               </button>
             </div>
@@ -61,11 +66,17 @@
       @update-product="updateProduct"
       ref="productModal"
     />
+    <DelProductModal
+      :temp-product="tempProduct"
+      @delete-product="deleteProduct"
+      ref="delProductModal"
+    />
   </div>
 </template>
 
 <script>
 import ProductModal from '../../components/ProductModal.vue';
+import DelProductModal from '../../components/DelProductModal.vue';
 
 export default {
   data() {
@@ -118,8 +129,24 @@ export default {
         })
         .catch((err) => console.log(err));
     },
+    deleteProduct(tempProduct) {
+      const { delProductModal } = this.$refs;
+      this.$http
+        .delete(
+          `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${tempProduct.id}`,
+        )
+        .then((res) => {
+          if (res.data.success) {
+            delProductModal.hideModal();
+            this.getProducts();
+          } else {
+            alert(res.data.message);
+          }
+        })
+        .catch((err) => console.log(err));
+    },
     openModal(item) {
-      const { productModal } = this.$refs;
+      const { productModal, delProductModal } = this.$refs;
       this.action = window.event.target.dataset.action;
       this.$refs.productModal.imgData = null;
 
@@ -137,10 +164,11 @@ export default {
           productModal.openModal();
           break;
 
-        // case 'remove':
-        //   this.tempProduct = { ...item };
-        //   delProductModal.openModal();
-        //   break;
+        case 'remove':
+          this.tempProduct = { ...item };
+          delProductModal.openModal();
+          break;
+
         default:
           break;
       }
@@ -148,6 +176,7 @@ export default {
   },
   components: {
     ProductModal,
+    DelProductModal,
   },
   created() {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)hextoken\s*=\s*([^;]*).*$)|^.*$/, '$1');
