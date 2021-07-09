@@ -66,17 +66,13 @@
       @update-product="updateProduct"
       ref="productModal"
     />
-    <DelProductModal
-      :temp-product="tempProduct"
-      @delete-product="deleteProduct"
-      ref="delProductModal"
-    />
+    <DelModal :temp-product="tempProduct" @delete="deleteProduct" ref="delModal" />
   </div>
 </template>
 
 <script>
 import ProductModal from '../../components/ProductModal.vue';
-import DelProductModal from '../../components/DelProductModal.vue';
+import DelModal from '../../components/DelModal.vue';
 
 export default {
   data() {
@@ -129,14 +125,14 @@ export default {
         .catch((err) => console.log(err));
     },
     deleteProduct(tempProduct) {
-      const { delProductModal } = this.$refs;
+      const { delModal } = this.$refs;
       this.$http
         .delete(
           `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${tempProduct.id}`,
         )
         .then((res) => {
           if (res.data.success) {
-            delProductModal.hideModal();
+            delModal.hideModal();
             this.getProducts();
           } else {
             alert(res.data.message);
@@ -145,7 +141,7 @@ export default {
         .catch((err) => console.log(err));
     },
     openModal(item) {
-      const { productModal, delProductModal } = this.$refs;
+      const { productModal, delModal } = this.$refs;
       this.action = window.event.target.dataset.action;
       this.$refs.productModal.imgData = null;
 
@@ -165,7 +161,7 @@ export default {
 
         case 'remove':
           this.tempProduct = { ...item };
-          delProductModal.openModal();
+          delModal.openModal();
           break;
 
         default:
@@ -175,7 +171,7 @@ export default {
   },
   components: {
     ProductModal,
-    DelProductModal,
+    DelModal,
   },
   created() {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)hextoken\s*=\s*([^;]*).*$)|^.*$/, '$1');

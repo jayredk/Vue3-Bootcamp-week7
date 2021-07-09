@@ -1,16 +1,16 @@
 <template>
   <div
-    id="delProductModal"
+    id="delModal"
     ref="modal"
     class="modal fade"
     tabindex="-1"
-    aria-labelledby="delProductModalLabel"
+    aria-labelledby="delModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content border-0">
         <div class="modal-header bg-danger text-white">
-          <h5 id="delProductModalLabel" class="modal-title">
+          <h5 id="delModalLabel" class="modal-title">
             <span>刪除產品</span>
           </h5>
           <button
@@ -28,7 +28,7 @@
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
             取消
           </button>
-          <button @click="$emit('deleteProduct', tempProduct)" type="button" class="btn btn-danger">
+          <button @click="$emit('delete', tempProduct)" type="button" class="btn btn-danger">
             確認刪除
           </button>
         </div>

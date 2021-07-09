@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex">
+  <div class="d-flex align-items-start">
     <aside class="navbar navbar-expand-lg flex-shrink-0 navbar-dark bg-dark" style="width:200px;">
       <div class="container-fluid flex-column justify-content-between h-100 min-vh-100">
         <div class="align-items-start w-100">
