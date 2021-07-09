@@ -1,21 +1,10 @@
 <template>
   <div class="d-flex">
     <aside class="navbar navbar-expand-lg flex-shrink-0 navbar-dark bg-dark" style="width:200px;">
-      <div class="container-fluid flex-column h-100 min-vh-100">
-        <a class="navbar-brand mt-3 mb-5" href="#">後台</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse align-items-start w-100" id="navbarSupportedContent">
-          <ul class="navbar-nav flex-column w-100 mb-2 mb-lg-0 text-start">
+      <div class="container-fluid flex-column justify-content-between h-100 min-vh-100">
+        <div class="align-items-start w-100">
+          <router-link class="navbar-brand d-block mt-3 mb-5" to="dashboard">後台</router-link>
+          <ul class="navbar-nav flex-column w-100 text-start">
             <li class="nav-item">
               <router-link
                 to="dashboard"
@@ -65,11 +54,40 @@
             </li>
           </ul>
         </div>
+        <button @click="signOut" class="btn btn-lg btn-light mb-5" type="button">登出</button>
       </div>
     </aside>
     <router-view />
   </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    signOut() {
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)hextoken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+
+      if (token) {
+        const url = `${process.env.VUE_APP_API}logout`;
+        this.$http.defaults.headers.common.Authorization = token;
+
+        this.$http
+          .post(url)
+          .then((res) => {
+            if (res.data.success) {
+              document.cookie = 'hextoken=;expires=';
+              alert(res.data.message);
+              this.$router.push('/');
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    },
+  },
+};
+</script>
 
 <style lang="scss">
 @import '../../assets/stylesheets/all';
