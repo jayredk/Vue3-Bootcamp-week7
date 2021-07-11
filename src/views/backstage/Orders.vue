@@ -68,6 +68,11 @@
     <Pagination :page="pagination" @getData="getOrders" />
     <OrderModal :order="tempOrder" @update-paid="updateOrder" ref="orderModal" />
     <DelModal :temp-product="tempOrder" ref="delModal" />
+    <Loading :active="isLoading">
+      <template v-slot:default>
+        <img src="../../assets/images/cat.gif" alt="Loading" />
+      </template>
+    </Loading>
   </div>
 </template>
 
@@ -82,6 +87,7 @@ export default {
       orders: [],
       pagination: {},
       tempOrder: {},
+      isLoading: true,
     };
   },
   components: {
@@ -92,6 +98,7 @@ export default {
   methods: {
     getOrders(page = 1) {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)hextoken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+      this.isLoading = true;
 
       if (token) {
         const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/orders?page=${page}`;
@@ -102,6 +109,10 @@ export default {
             if (res.data.success) {
               this.orders = res.data.orders;
               this.pagination = res.data.pagination;
+              this.isLoading = false;
+            } else {
+              alert(res.data.message);
+              this.isLoading = false;
             }
           })
           .catch((err) => {
@@ -116,6 +127,7 @@ export default {
       const uploadData = {
         data: { ...tempOrder },
       };
+      this.isLoading = true;
 
       this.$http
         .put(url, uploadData)
@@ -125,10 +137,12 @@ export default {
             alert(res.data.message);
             orderModal.hideModal();
             this.getOrders();
+            this.isLoading = false;
           } else {
             const { orderModal } = this.$refs;
             alert(res.data.message);
             orderModal.hideModal();
+            this.isLoading = false;
           }
         })
         .catch((err) => {
@@ -137,6 +151,8 @@ export default {
     },
     deleteOrder(tempOrder) {
       const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/order/${tempOrder.id}`;
+      this.isLoading = true;
+
       this.$http
         .delete(url)
         .then((res) => {
@@ -144,10 +160,12 @@ export default {
             const { delModal } = this.$refs;
             alert(res.data.message);
             delModal.hideModal();
+            this.isLoading = false;
           } else {
             const { delModal } = this.$refs;
             alert(res.data.message);
             delModal.hideModal();
+            this.isLoading = false;
           }
         })
         .catch((err) => {

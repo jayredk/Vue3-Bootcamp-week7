@@ -67,6 +67,11 @@
       ref="productModal"
     />
     <DelModal :temp-product="tempProduct" @delete="deleteProduct" ref="delModal" />
+    <Loading :active="isLoading">
+      <template v-slot:default>
+        <img src="../../assets/images/cat.gif" alt="Loading" />
+      </template>
+    </Loading>
   </div>
 </template>
 
@@ -81,19 +86,23 @@ export default {
       pagination: {},
       tempProduct: { imagesUrl: [] },
       action: '',
+      isLoading: false,
     };
   },
   methods: {
     getProducts(page = 1) {
       const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products?page=${page}`;
+      this.isLoading = true;
       this.$http
         .get(url)
         .then((res) => {
           if (res.data.success) {
             this.products = res.data.products;
             this.pagination = res.data.pagination;
+            this.isLoading = false;
           } else {
             alert(res.data.message);
+            this.isLoading = false;
           }
         })
         .catch((err) => {
@@ -107,6 +116,7 @@ export default {
         data: { ...tempProduct },
       };
       const { productModal } = this.$refs;
+      this.isLoading = true;
 
       if (this.action === 'edit') {
         url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${tempProduct.id}`;
@@ -118,14 +128,17 @@ export default {
           if (res.data.success) {
             productModal.hideModal();
             this.getProducts();
+            this.isLoading = false;
           } else {
             alert(res.data.message);
+            this.isLoading = false;
           }
         })
         .catch((err) => console.log(err));
     },
     deleteProduct(tempProduct) {
       const { delModal } = this.$refs;
+      this.isLoading = true;
       this.$http
         .delete(
           `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${tempProduct.id}`,
@@ -134,8 +147,10 @@ export default {
           if (res.data.success) {
             delModal.hideModal();
             this.getProducts();
+            this.isLoading = false;
           } else {
             alert(res.data.message);
+            this.isLoading = false;
           }
         })
         .catch((err) => console.log(err));

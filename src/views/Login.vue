@@ -42,6 +42,11 @@
       </div>
     </div>
   </div>
+  <Loading :active="isLoading">
+    <template v-slot:default>
+      <img src="../assets/images/tenor.gif" alt="Loading" style="height:300px;" />
+    </template>
+  </Loading>
 </template>
 
 <script>
@@ -52,11 +57,13 @@ export default {
         username: '',
         password: '',
       },
+      isLoading: false,
     };
   },
   methods: {
     signIn() {
       const url = `${process.env.VUE_APP_API}admin/signin`;
+      this.isLoading = true;
       this.$http
         .post(url, this.user)
         .then((res) => {
@@ -64,10 +71,13 @@ export default {
             const { token, expired } = res.data;
             document.cookie = `hextoken=${token}; expires=${expired}`;
             alert(res.data.message);
+            this.isLoading = false;
             this.$router.push('/admin/dashboard');
           } else {
+            alert(res.data.message);
             this.user.username = '';
             this.user.password = '';
+            this.isLoading = false;
           }
         })
         .catch((err) => {
