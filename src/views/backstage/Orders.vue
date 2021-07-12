@@ -87,7 +87,7 @@ export default {
       orders: [],
       pagination: {},
       tempOrder: {},
-      isLoading: true,
+      isLoading: false,
     };
   },
   components: {
